@@ -66,7 +66,7 @@ router.post('/login', async (req, res, next) => {
 router.post('/refresh-token', async (req, res) => {
   const refreshToken = req.headers['authorization']
   // TODO: compare token from DB
-  if(refreshToken === tokens.getUserByToken) {
+  if(refreshToken === tokens.getUserByToken(refreshToken)) {
     const data = await tokens.refreshTokens(refreshToken)
     res.json({ ...data })
   }
