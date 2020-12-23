@@ -31,6 +31,7 @@ router.post('/registration', async (req, res) => {
     return res.status(409).json({}) // TODO:
   }
   try {
+    console.log(req.body)
     const newUser = await db.createUser(req.body)
     console.log(newUser)
     const token = await tokens.createTokens(newUser)
