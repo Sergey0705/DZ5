@@ -98,13 +98,24 @@ router
       }
       if(files.fileRef.name === '' || files.fileRef.size === 0) {
         fs.unlink(files.fileRef.path)
-        return res.redirect('/profile')
+        return res.status(400).json({
+          code: 400,
+          message: 'Image must have name and some size',
+        })
       }
 
-      if(fields.oldPassword.name && fields.newPassword.name && fields.confirmPassword.name && fields.newPassword.name === fields.confirmPassword.name) {
-      } else if (!fields.oldPassword.name && !fields.newPassword.name && !fields.confirmPassword.name) {
-      } else {
-        return res.redirect('/profile')
+      if(fields.newPassword.name !== fields.confirmPassword.name) {
+        return res.status(400).json({
+          code: 400,
+          message: 'New password and confirm password must be the same',
+        })
+      }
+      
+      if(!fields.oldPassword.name || !fields.newPassword.name || !fields.confirmPassword.name) {
+        return res.status(400).json({
+          code: 400,
+          message: 'If you want to change password you must fill three fields: old password, new password, confirm password',
+        })
       }
      
       fileName = path.join(upload, files.fileRef.name)
@@ -116,10 +127,16 @@ router
       })
       const dir = fileName.replace('public', '')
       files.image = dir
-    })
-    const user = req.user
-    res.json({
-      ...helper.serializeUser(user),
+
+      let user = req.user
+      if(fields.firstName.name) user.firstName = fields.firstName.name
+      if(files.fileRef.name) user.image = files.fileRef.name
+      if(fields.middleName.name) user.middleName = fields.middleName.name
+      if(fields.surName.name) user.surName = fields.surName.name
+
+      res.json({
+        ...helper.serializeUser(user),
+      })
     })
   })
 
