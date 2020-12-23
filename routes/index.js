@@ -105,7 +105,6 @@ router
         if (err) {
           console.error(err)
           fs.unlink(fileName)
-          fs.rename(files.photo.path, fileName)
         }
       })
       const dir = fileName.replace('public', '')
