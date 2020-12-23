@@ -102,6 +102,7 @@ router
       }
 
       if(fields.oldPassword.name && fields.newPassword.name && fields.confirmPassword.name && fields.newPassword.name === fields.confirmPassword.name) {
+      } else if (!fields.oldPassword.name && !fields.newPassword.name && !fields.confirmPassword.name) {
       } else {
         return res.redirect('/profile')
       }
