@@ -100,24 +100,12 @@ router
         fs.unlink(files.fileRef.path)
         return res.redirect('/profile')
       }
-      if(fields.oldPassword.name || !fields.newPassword.name || !fields.confirmPassword.name || fields.newPassword.name !== fields.confirmPassword.name) {
+      
+      if(fields.oldPassword.name && fields.newPassword.name && fields.confirmPassword.name && fields.newPassword.name !== fields.confirmPassword.name) {
+      } else {
         return res.redirect('/profile')
       }
-      if(!fields.oldPassword.name || fields.newPassword.name || !fields.confirmPassword.name || fields.newPassword.name !== fields.confirmPassword.name) {
-        return res.redirect('/profile')
-      }
-      if(!fields.oldPassword.name || !fields.newPassword.name || fields.confirmPassword.name || fields.newPassword.name !== fields.confirmPassword.name) {
-        return res.redirect('/profile')
-      }
-      if(!fields.oldPassword.name || fields.newPassword.name || fields.confirmPassword.name || fields.newPassword.name !== fields.confirmPassword.name) {
-        return res.redirect('/profile')
-      }
-      if(fields.oldPassword.name || fields.newPassword.name || !fields.confirmPassword.name || fields.newPassword.name !== fields.confirmPassword.name) {
-        return res.redirect('/profile')
-      }
-      if(fields.oldPassword.name || !fields.newPassword.name || fields.confirmPassword.name || fields.newPassword.name !== fields.confirmPassword.name) {
-        return res.redirect('/profile')
-      }
+     
       fileName = path.join(upload, files.fileRef.name)
       fs.rename(files.fileRef.path, fileName, (err) => {
         if (err) {
