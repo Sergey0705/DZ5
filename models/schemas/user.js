@@ -32,9 +32,9 @@ const userSchema = new Schema(
       required: [true, 'Password required'],
     },
     // refreshToken
-    refreshToken: {
-      type: String,
-    }
+    // refreshToken: {
+    //   type: String,
+    // }
   },
   {
     versionKey: false,

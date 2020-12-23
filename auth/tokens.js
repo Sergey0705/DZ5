@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const _ = require('lodash')
 const helper = require('../helpers/serialize')
 const models = require('../models')
-const { db } = require('../models/schemas/user')
+// const { db } = require('../models/schemas/user')
 require('dotenv').config()
 const SECRET = process.env.SECRET
 
@@ -27,10 +27,10 @@ const createTokens = async (user) => {
     },
   )
   // TODO: save refreshToken to DB
-  if('id' === db.getUserById('id')) {
-    const user = db.getUserById('id')
-    user.refreshToken = createRefreshToken
-  }
+  // if('id' === db.getUserById('id')) {
+    // const user = db.getUserById('id')
+    // user.refreshToken = createRefreshToken
+  // }
   const verifyToken = jwt.decode(createToken, SECRET)
   const verifyRefresh = jwt.decode(createRefreshToken, SECRET)
 

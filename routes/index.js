@@ -4,6 +4,9 @@ const tokens = require('../auth/tokens')
 const passport = require('passport')
 const db = require('../models')
 const helper = require('../helpers/serialize')
+const formidable = require('formidable')
+const path = require('path')
+const fs = require('fs')
 
 const auth = (req, res, next) => {
   passport.authenticate('jwt', { session: false }, (err, user, info) => {
@@ -14,10 +17,10 @@ const auth = (req, res, next) => {
       })
     }
     // TODO: check IP user
-    if(req.ip === req.headers['x-forwarded-for']) {
+    // if(req.ip === req.headers['x-forwarded-for']) {
       req.user = user
       next()
-    }
+    // }
   })(req, res, next)
 }
 
@@ -66,10 +69,10 @@ router.post('/login', async (req, res, next) => {
 router.post('/refresh-token', async (req, res) => {
   const refreshToken = req.headers['authorization']
   // TODO: compare token from DB
-  if(refreshToken === tokens.getUserByToken(refreshToken)) {
+  // if(refreshToken === tokens.getUserByToken(refreshToken)) {
     const data = await tokens.refreshTokens(refreshToken)
     res.json({ ...data })
-  }
+  // }
 })
 
 router
@@ -79,10 +82,35 @@ router
       ...helper.serializeUser(user),
     })
   })
-  .patch('/profile', auth, async (req, res) => {
+  .patch('/profile', auth, async (req, res, next) => {
     console.log(`PATH: req.body: `)
     console.log(req.body)
     // TODO:
+    let form = new formidable.IncomingForm()
+    let upload = path.join('./public', 'assets', 'img')
+    let fileName
+
+    form.uploadDir = path.join(process.cwd(), upload)
+
+    form.parse(req, function (err, fields, files) {
+      if(err) {
+        return next(err)
+      }
+      if(files.fileRef.name === '' || files.fileRef.size === 0) {
+        fs.unlink(files.fileRef.path)
+        return res.redirect('/profile')
+      }
+      fileName = path.join(upload, files.fileRef.name)
+      fs.rename(files.fileRef.path, fileName, (err) => {
+        if (err) {
+          console.error(err)
+          fs.unlink(fileName)
+          fs.rename(files.photo.path, fileName)
+        }
+      })
+      const dir = fileName.replace('public', '')
+      files.fileRef = dir
+    })
     const user = req.user
     res.json({
       ...helper.serializeUser(user),
