@@ -100,8 +100,8 @@ router
         fs.unlink(files.fileRef.path)
         return res.redirect('/profile')
       }
-      
-      if(fields.oldPassword.name && fields.newPassword.name && fields.confirmPassword.name && fields.newPassword.name !== fields.confirmPassword.name) {
+
+      if(fields.oldPassword.name && fields.newPassword.name && fields.confirmPassword.name && fields.newPassword.name === fields.confirmPassword.name) {
       } else {
         return res.redirect('/profile')
       }
