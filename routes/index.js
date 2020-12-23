@@ -115,7 +115,7 @@ router
         }
       })
       const dir = fileName.replace('public', '')
-      files.fileRef = dir
+      files.image = dir
     })
     const user = req.user
     res.json({
