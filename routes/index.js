@@ -85,60 +85,67 @@ router
     })
   })
   .patch('/profile', auth, async (req, res, next) => {
-    console.log(`PATH: req.body: `)
-    console.log(req.body)
     // TODO:
     let form = new formidable.IncomingForm()
-    let upload = path.join('./public', 'assets', 'img')
+    let upload = path.join('uploads')
     let fileName
 
     form.uploadDir = path.join(process.cwd(), upload)
 
-    form.parse(req, function (err, fields, files) {
+    form.parse(req,async function (err, fields, files) {
+      console.log(req.user)
       if(err) {
         return next(err)
       }
-      if(files.fileRef.name === '' || files.fileRef.size === 0) {
-        fs.unlink(files.fileRef.path)
+      if(files.avatar.name === '' || files.avatar.size === 0) {
+        fs.unlink(files.avatar.path)
         return res.status(400).json({
           code: 400,
           message: 'Image must have name and some size',
         })
       }
-
-      if(fields.newPassword.name !== fields.confirmPassword.name) {
-        return res.status(400).json({
-          code: 400,
-          message: 'New password and confirm password must be the same',
-        })
-      }
       
-      if(!fields.oldPassword.name || !fields.newPassword.name || !fields.confirmPassword.name) {
+      if(!fields.oldPassword && fields.newPassword) {
         return res.status(400).json({
           code: 400,
-          message: 'If you want to change password you must fill three fields: old password, new password, confirm password',
+          message: 'If you want to change password you must fill two fields: old password, new password'
+        })
+      } else if (fields.oldPassword && !fields.newPassword) {
+        return res.status(400).json({
+          code: 400,
+          message: 'If you want to change password you must fill two fields: old password, new password'
         })
       }
-     
-      fileName = path.join(upload, files.fileRef.name)
-      fs.rename(files.fileRef.path, fileName, (err) => {
+
+      fileName = path.join(upload, files.avatar.name)
+      fs.rename(files.avatar.path, fileName, (err) => {
         if (err) {
           console.error(err)
           fs.unlink(fileName)
         }
       })
-      const dir = fileName.replace('public', '')
-      files.image = dir
+      const dir = fileName.replace('uploads', '')
 
       let user = req.user
-      if(fields.firstName.name) user.firstName = fields.firstName.name
-      if(files.fileRef.name) user.image = files.fileRef.name
-      if(fields.middleName.name) user.middleName = fields.middleName.name
-      if(fields.surName.name) user.surName = fields.surName.name
 
-      res.json({
-        ...helper.serializeUser(user),
-      })
+      if(fields.firstName) user.firstName = fields.firstName
+      if(files.avatar.name) user.image = dir
+      if(fields.middleName) user.middleName = fields.middleName
+      if(fields.surName) user.surName = fields.surName
+
+      if(fields.oldPassword && fields.newPassword) {
+        user.newPassword = fields.newPassword
+        user.setPassword(user.newPassword)
+        await user.save()
+        res.json({
+          ...helper.serializeUser(user),
+        })
+      } else {
+        await user.save()
+        res.json({
+          ...helper.serializeUser(user),
+        })
+      }
     })
   })
 
