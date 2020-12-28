@@ -1,11 +1,10 @@
 const mongoose = require('mongoose')
 require('dotenv').config()
-let uri = process.env.uriDB
 
 mongoose.Promise = global.Promise
 mongoose.set('useFindAndModify', false)
 mongoose.set('useCreateIndex', true)
-mongoose.connect(uri, {
+mongoose.connect(process.env.uriDB, {
   useNewUrlParser: true,
   useFindAndModify: false,
   useCreateIndex: true,
